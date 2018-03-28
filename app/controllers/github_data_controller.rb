@@ -65,6 +65,7 @@ class GithubDataController < ApplicationController
     owner, repo, pull_number = retrieve_github_url(@submission_record)
     unless pull_number.nil?
       retrieve_graphql_data(owner, repo, pull_number)
+
     end
   end
 
@@ -83,7 +84,29 @@ class GithubDataController < ApplicationController
       # puts "Message: #{node.commit.message}"
       # puts "Files changed: #{node.commit.changed_files}",""
     end
+    #sort_data_for_commiter(commits)
   end
+
+
+  # sort all the commits to know each commiter's contribution, e.g. number of commits or number of lines of code changed
+=begin
+  def sort_data_for_commiter(commits)
+      @committers = Hash.new(Array.new)
+    commits.node.each do |node|
+        # format would be [commits, additions, deletions, changedFiles]
+        if @committers.has_key?(node.committer.name)
+            arr = @committers[node.committer.name]
+            arr[0] += 1
+            arr[1] += node.additions
+            arr[2] += node.deletions
+            arr[3] += node.changedFiles
+            @committers[node.committer.name] = arr
+        else
+            @committers[node.committer.name] = [1, node.additions, node.deletions, node.changedFiles]
+        end
+    end
+  end
+=end
 
   def retrieve_github_url(submission)
     if submission.operation != 'Submit Hyperlink'
